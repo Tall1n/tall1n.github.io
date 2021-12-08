@@ -104,7 +104,38 @@ The starting of the wallet takes a few seconds, so `headless_wallet.status()` wi
 You only have to run `start` once to get the wallet running. You can check the console in which you executed `npm start` to see your requests
 reaching the headless wallet.
 
-###
+### Running the full node locally.
+As soon as you start sending more freuqent requests to the network, you will need the full node running locally.
+Luckily, the hathor team provides a docker container for that. 
+There are two parts you got prepare for the docker run command to work.
+1. You have to generate a peer_id and message the Hathor team on discord to whitelist it.
+2. You have to download the data snapshot or you will sync the blockchain for 10 days or so to get all data.
+
+First clone the https://github.com/HathorNetwork/hathor-core repository and install it
+```shell
+git clone git@github.com:HathorNetwork/hathor-core.git
+cd hathor-core/
+poetry install
+poetry run make protos
+
+wget $(curl https://hathor-public-files.s3.amazonaws.com/temp/mainnet-data-latest)
+tar xzf data-*.tar.gz
+
+hathor-cli gen_peer_id > data/peer_id.json
+```
+Now request the ID to be whitelisted on via discord and save your peer_id.json content somewher save.
+
+Now you have the data directory set up and the peer_id ready and you can run the full node locally using the docker container
+```shell
+
+docker run -v ~/path/to/cloned/repo/hathor-core/data:/data:consistent -ti \
+ -p 8080:8080 -p 8081:8081 hathornetwork/hathor-core  \
+ run_node --data /data --cache --status 8080 --stratum 8081  \
+ --peer /data/peer_id.json
+```
+
+The first initialization will still run for a few minitues despite the data snapshot.
+
 
 ### Other Resources:
 
