@@ -3,6 +3,7 @@
 Hathor is a new blockchain that combines the trust and reliabilty of bitcoins proof-of-work concept and combines it with a DAG layer to create
 a blockchain with instant feeless transactions that is easy to use. The users should focus on their domain knowledge and not on the blockchain knowledge.
 
+### Public API
 Hathor provides a public api to directly interact with the blockchain. https://docs.hathor.network/
 
 So you can just use 
@@ -26,6 +27,8 @@ res_json = tokensResponse.json()
 
 ```
 to get all transactions of the NFT with the UID `00000000dbe81c288c32ae6f9e586a29e1069a6083e1bb481546e7d584fcd223`.
+
+### Interact with your Wallet
 
 To interact with your own wallet, the Hathor team provides a headless-wallet that you can clone from github https://github.com/HathorNetwork/hathor-wallet-headless, with a ReDoc API Documentation https://wallet-headless.docs.hathor.network/
 
@@ -101,6 +104,7 @@ The starting of the wallet takes a few seconds, so `headless_wallet.status()` wi
 You only have to run `start` once to get the wallet running. You can check the console in which you executed `npm start` to see your requests
 reaching the headless wallet.
 
+###
 
 ### Other Resources:
 
@@ -108,6 +112,30 @@ reaching the headless wallet.
 * The community project HAthor Bullz Club proves a general purpose NFT viewer: https://explorer.hathorbullzclub.io/
 
 
+### Useful functions
+Get the current owner of an NFT
+```python
+import requests
+
+
+def get_nft_owner(token_uid: str) -> str:
+    base_url = "https://node.explorer.hathor.network/v1a"
+
+    tokensResponse = requests.get(
+        f"{base_url}/thin_wallet/token_history",
+        params={"id": token_uid, "count": 1},
+    )
+    res_json = tokensResponse.json()
+
+    transactions_output = res_json["transactions"][0]["outputs"]
+    address_holding_the_token = [
+        tx["decoded"]["address"]
+        for tx in transactions_output
+        if tx["token"] == token_uid
+    ]
+
+    return address_holding_the_token[0]
+```
 ------
 
 ## Welcome to GitHub Pages
